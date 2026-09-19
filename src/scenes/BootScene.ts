@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { PLAYER_IDLE_FRAME_RATE, PLAYER_WALK_FRAME_RATE, PLAYER_ATTACK_FRAME_RATE } from '../config';
+import { PLAYER_IDLE_FRAME_RATE, PLAYER_WALK_FRAME_RATE, PLAYER_ATTACK_FRAME_RATE, DRAGON_IDLE_FRAME_RATE, DRAGON_ATTACK_FRAME_RATE } from '../config';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -8,6 +8,7 @@ export class BootScene extends Phaser.Scene {
 
   preload() {
     this.load.image('knight_silver', `${import.meta.env.BASE_URL}assets/images/knight_silver.png`);
+    this.load.image('dragon', `${import.meta.env.BASE_URL}assets/images/dragon.png`);
   }
 
   create() {
@@ -46,6 +47,34 @@ export class BootScene extends Phaser.Scene {
       key: 'knight-attack',
       frames: this.anims.generateFrameNumbers('knight_silver', { start: 10, end: 11 }),
       frameRate: PLAYER_ATTACK_FRAME_RATE,
+      repeat: 0,
+    });
+
+    // Текущий dragon.png — 2172×724, без ровной сетки 96×96.
+    // Первые три позы вырезаем вручную, сохраняя общую линию земли.
+    const dragonTexture = this.textures.get('dragon');
+    const dragonFrameX = [12, 179, 347];
+    dragonFrameX.forEach((x, frame) => {
+      dragonTexture.add(frame, 0, x, 306, 167, 162);
+    });
+
+    // 7 — подготовка, 8–9 — огонь. Широкие кадры расширяются влево,
+    // чтобы пламя помещалось целиком, а сам дракон оставался на месте.
+    dragonTexture.add(7, 0, 1169, 306, 172, 162)!.setTrim(167, 162, -5, 0, 172, 162);
+    dragonTexture.add(8, 0, 1347, 306, 202, 162)!.setTrim(167, 162, -35, 0, 202, 162);
+    dragonTexture.add(9, 0, 1560, 306, 252, 162)!.setTrim(167, 162, -85, 0, 252, 162);
+
+    this.anims.create({
+      key: 'dragon-idle',
+      frames: this.anims.generateFrameNumbers('dragon', { start: 0, end: 2 }),
+      frameRate: DRAGON_IDLE_FRAME_RATE,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'dragon-fire',
+      frames: this.anims.generateFrameNumbers('dragon', { start: 7, end: 9 }),
+      frameRate: DRAGON_ATTACK_FRAME_RATE,
       repeat: 0,
     });
 

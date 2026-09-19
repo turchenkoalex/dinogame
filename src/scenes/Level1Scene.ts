@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH } from '../config';
 import { Player } from '../player/Player';
+import { Enemy } from '../objects/Enemy';
 
 export class Level1Scene extends Phaser.Scene {
   private player!: Player;
@@ -31,14 +32,8 @@ export class Level1Scene extends Phaser.Scene {
 
     this.player = new Player(this, 100, 600);
     this.physics.add.collider(this.player, platforms);
+    new Enemy(this, 1050, 660);
     this.restartKey = this.input.keyboard!.addKey('R');
-
-    this.add.text(32, 24, 'Level 1', {
-      fontSize: '36px', color: '#172b3a',
-    });
-    this.add.text(32, 76, '← → — движение    ↑ — прыжок    Space — атака    R — заново', {
-      fontSize: '22px', color: '#172b3a',
-    });
   }
 
   update() {
