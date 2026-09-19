@@ -98,7 +98,8 @@ export class BootScene extends Phaser.Scene {
     dragonTexture.add(8, 0, 1347, 306, 202, 162)!.setTrim(167, 162, -35, 0, 202, 162);
     dragonTexture.add(9, 0, 1560, 306, 252, 162)!.setTrim(167, 162, -85, 0, 252, 162);
     // 11 (двенадцатый кадр) — дракон лежит поверженным.
-    dragonTexture.add(11, 0, 1810, 294, 354, 200);
+    dragonTexture.add(11, 0, 1976, 294, 303, 200)!
+
 
     this.anims.create({
       key: 'dragon-idle',

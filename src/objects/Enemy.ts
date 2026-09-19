@@ -19,6 +19,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
   }
 
   attack() {
+    if (this.health <= 0) return;
+
     // true позволяет закончить текущий выдох, не начиная его заново.
     this.play('dragon-fire', true);
   }
@@ -31,10 +33,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
     if (this.health === 0) {
       this.emit('defeated');
-      this.setActive(false);
-      this.anims.stop();
       // 11 — двенадцатый кадр дракона: он лежит поверженным.
       this.setFrame(11);
+      this.anims.stop();
     }
   }
 }
