@@ -42,6 +42,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     if (spacePressed && !isAttacking) {
       this.play('knight-attack');
+      // Сообщаем уровню о начале нового взмаха мечом.
+      this.emit('attack-start');
     }
 
     // Даём взмаху закончиться, прежде чем включать ходьбу или прыжок.

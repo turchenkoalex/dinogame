@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import { DRAGON_SCALE, DRAGON_ATTACK_INTERVAL } from '../config';
+import { DRAGON_SCALE } from '../config';
 
-// Дракон стоит и периодически выдыхает огонь. Урон добавим позже.
+// Дракон отвечает огнём на близкую атаку рыцаря. Урон добавим позже.
 export class Enemy extends Phaser.GameObjects.Sprite {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'dragon', 0);
@@ -15,13 +15,10 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       this.play('dragon-idle');
     });
 
-    const attackTimer = scene.time.addEvent({
-      delay: DRAGON_ATTACK_INTERVAL,
-      loop: true,
-      callback: () => this.play('dragon-fire', true),
-    });
+  }
 
-    // При удалении дракона или перезапуске уровня убираем его таймер.
-    this.once('destroy', () => attackTimer.remove(false));
+  attack() {
+    // true позволяет закончить текущий выдох, не начиная его заново.
+    this.play('dragon-fire', true);
   }
 }

@@ -21,7 +21,7 @@ export const PLAYER_ATTACK_FRAME_RATE = 8;
 export const DRAGON_SCALE = 0.65;
 export const DRAGON_IDLE_FRAME_RATE = 5;
 
-// Время между атаками в миллисекундах: 10000 = 10 секунд.
-export const DRAGON_ATTACK_INTERVAL = 10000;
+// Увеличь число, чтобы дракон отвечал на взмах мечом с большей дистанции.
+export const DRAGON_ATTACK_DISTANCE = 140;
 // Три кадра при скорости 3 кадра/сек дают выдох длиной в одну секунду.
 export const DRAGON_ATTACK_FRAME_RATE = 3;

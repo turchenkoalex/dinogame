@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH } from '../config';
+import { GAME_WIDTH, DRAGON_ATTACK_DISTANCE } from '../config';
 import { Player } from '../player/Player';
 import { Enemy } from '../objects/Enemy';
 
@@ -32,7 +32,19 @@ export class Level1Scene extends Phaser.Scene {
 
     this.player = new Player(this, 100, 600);
     this.physics.add.collider(this.player, platforms);
-    new Enemy(this, 1050, 660);
+    const dragon = new Enemy(this, 1050, 660);
+
+    this.player.on('attack-start', () => {
+      // Сравниваем позиции у ног, учитывая и расстояние по высоте.
+      const distance = Phaser.Math.Distance.Between(
+        this.player.body.center.x, this.player.body.bottom,
+        dragon.x, dragon.y,
+      );
+
+      if (distance <= DRAGON_ATTACK_DISTANCE) {
+        dragon.attack();
+      }
+    });
     this.restartKey = this.input.keyboard!.addKey('R');
   }
 
