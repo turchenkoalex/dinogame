@@ -57,7 +57,9 @@ export class Level1Scene extends Phaser.Scene {
 
     this.player = new Player(this, 100, 600);
     this.physics.add.collider(this.player, platforms);
+    // Гравитация и столкновения ставят дракона на поверхность земли.
     const dragon = new Enemy(this, 1050, 660);
+    this.physics.add.collider(dragon, platforms);
     // Временный гриб стоит на первой плавающей платформе.
     const mushroom = this.add.circle(320, 522, 16, 0xe85d75);
     this.physics.add.existing(mushroom, true);

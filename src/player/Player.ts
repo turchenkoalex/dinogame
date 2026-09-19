@@ -7,6 +7,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   health = PLAYER_MAX_HEALTH;
   hasGoldenArmor = false;
   private armorTimer?: Phaser.Time.TimerEvent;
+  private hurtUntil = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'knight_silver', 0);
@@ -39,6 +40,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setFrame(14);
       this.body.enable = false;
       this.setActive(false);
+    } else {
+      this.hurtUntil = this.scene.time.now + 300;
+      this.anims.stop();
+      this.setFrame(13);
     }
   }
 
@@ -77,6 +82,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (upPressed && this.body.blocked.down) {
       this.body.setVelocityY(PLAYER_JUMP_VELOCITY);
     }
+
+    // Удерживаем позу урона, чтобы ходьба, прыжок и атака не сменили её сразу.
+    if (this.scene.time.now < this.hurtUntil) return;
 
     const isAttacking = this.anims.currentAnim?.key === 'knight-attack' && this.anims.isPlaying;
 
