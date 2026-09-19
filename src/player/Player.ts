@@ -22,19 +22,23 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.play('knight-idle');
   }
 
+  isLive(): boolean {
+    return this.health > 0;
+  }
+
   takeDamage(amount: number) {
     if (this.hasGoldenArmor || this.health <= 0) return;
 
     this.health = Math.max(0, this.health - amount);
     this.emit('health-changed', this.health);
 
-    if (this.health === 0) {
+    if (this.health <= 0) {
       this.emit('defeated');
-      this.setActive(false);
-      this.anims.stop();
       // 14 — пятнадцатый кадр спрайта: рыцарь лежит поверженным.
+      this.anims.stop();
       this.setFrame(14);
       this.body.enable = false;
+      this.setActive(false);
     }
   }
 
@@ -54,6 +58,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
+    if (!this.isLive()) return;
+
     this.body.setVelocityX(0);
 
     if (this.cursors.left.isDown) {

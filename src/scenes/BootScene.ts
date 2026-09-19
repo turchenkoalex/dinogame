@@ -59,7 +59,7 @@ export class BootScene extends Phaser.Scene {
     texture.add(10, 0, 1502, 294, 138, 200)!.setTrim(120, 200, 0, 0, 138, 200);
     texture.add(11, 0, 1644, 294, 196, 200)!.setTrim(120, 200, 0, 0, 196, 200);
     // 14 (пятнадцатый кадр) — рыцарь лежит поверженным.
-    texture.add(14, 0, 1850, 294, 322, 200);
+    texture.add(14, 0, 2002, 294, 322, 200);
 
     this.anims.create({
       key: 'knight-idle',
