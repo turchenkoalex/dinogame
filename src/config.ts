@@ -1,6 +1,12 @@
 export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
 
+// Примерная ширина тайла на экране. Меньше число — больше повторений травы.
+export const TERRAIN_TILE_WIDTH = 64;
+
+// Физическая рамка земли чуть ниже картинки, чтобы рыцарь стоял на траве.
+export const GROUND_BODY_OFFSET_Y = 8;
+
 // Попробуй увеличить число: персонаж станет быстрее бегать.
 export const PLAYER_SPEED = 280;
 

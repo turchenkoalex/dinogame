@@ -9,14 +9,36 @@ export class BootScene extends Phaser.Scene {
   preload() {
     this.load.image('knight_silver', `${import.meta.env.BASE_URL}assets/images/knight_silver.png`);
     this.load.image('dragon', `${import.meta.env.BASE_URL}assets/images/dragon.png`);
+    this.load.image('terrain', `${import.meta.env.BASE_URL}assets/images/ground.png`);
+    this.load.image('ground_middle', `${import.meta.env.BASE_URL}assets/images/ground_middle.png`);
   }
 
   create() {
     this.createKnightAnimations();
     this.createDragonAnimations();
+    this.createTerrainFrames();
 
     // Позже здесь можно перейти в MenuScene, а пока сразу играем.
     this.scene.start('Level1Scene');
+  }
+
+  private createTerrainFrames() {
+    // В текущем PNG нет сетки 64×64, поэтому указываем области вручную.
+    const texture = this.textures.get('terrain');
+    const tiles = [
+      { x: 25, width: 257, height: 213 }, // 0: земля
+      { x: 291, width: 252, height: 213 }, // 1: другая земля
+      { x: 560, width: 253, height: 213 }, // 2: левый край земли
+      { x: 821, width: 255, height: 213 }, // 3: правый край земли
+      { x: 1088, width: 271, height: 174 }, // 4: середина платформы
+      { x: 1370, width: 256, height: 174 }, // 5: левый край платформы
+      { x: 1636, width: 249, height: 174 }, // 6: правый край платформы
+      { x: 1911, width: 227, height: 213 }, // 7: грунт
+    ];
+
+    tiles.forEach((tile, frame) => {
+      texture.add(frame, 0, tile.x, 280, tile.width, tile.height);
+    });
   }
 
   private createKnightAnimations() {
