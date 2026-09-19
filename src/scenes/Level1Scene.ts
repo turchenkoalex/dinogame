@@ -36,7 +36,7 @@ export class Level1Scene extends Phaser.Scene {
     this.add.text(32, 24, 'Level 1', {
       fontSize: '36px', color: '#172b3a',
     });
-    this.add.text(32, 76, '← → — движение    Space / ↑ — прыжок    R — заново', {
+    this.add.text(32, 76, '← → — движение    ↑ — прыжок    Space — атака    R — заново', {
       fontSize: '22px', color: '#172b3a',
     });
   }
