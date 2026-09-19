@@ -12,7 +12,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setScale(0.4);
     // Размеры тела задаются до масштаба: в игре остаётся прежнее тело 40×56.
     this.body.setSize(100, 140);
-    this.body.setOffset(6, 18);
+    // Над головой оставлено место для поднятого меча; тело стоит у ног.
+    this.body.setOffset(10, 58);
     this.body.setCollideWorldBounds(true);
     this.cursors = scene.input.keyboard!.createCursorKeys();
     this.play('knight-idle');
