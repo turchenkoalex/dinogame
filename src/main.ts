@@ -18,7 +18,8 @@ new Phaser.Game({
     default: 'arcade',
     arcade: {
       gravity: { x: 0, y: GRAVITY },
-      debug: true,
+      // В локальной разработке видны физические рамки, на GitHub Pages — нет.
+      debug: import.meta.env.DEV,
     },
   },
   scene: [BootScene, MenuScene, Level1Scene],
