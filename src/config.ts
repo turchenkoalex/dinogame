@@ -31,3 +31,10 @@ export const DRAGON_IDLE_FRAME_RATE = 5;
 export const DRAGON_ATTACK_DISTANCE = 140;
 // Три кадра при скорости 3 кадра/сек дают выдох длиной в одну секунду.
 export const DRAGON_ATTACK_FRAME_RATE = 3;
+
+export const PLAYER_MAX_HEALTH = 100;
+export const DRAGON_MAX_HEALTH = 200;
+export const PLAYER_ATTACK_DAMAGE = 10;
+export const DRAGON_ATTACK_DAMAGE = 15;
+export const HEALTH_MUSHROOM_HEAL = 50;
+export const GOLDEN_ARMOR_DURATION = 15000;

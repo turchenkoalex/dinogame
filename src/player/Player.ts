@@ -1,9 +1,12 @@
 import Phaser from 'phaser';
-import { PLAYER_SPEED, PLAYER_JUMP_VELOCITY } from '../config';
+import { PLAYER_SPEED, PLAYER_JUMP_VELOCITY, PLAYER_MAX_HEALTH, GOLDEN_ARMOR_DURATION } from '../config';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  health = PLAYER_MAX_HEALTH;
+  hasGoldenArmor = false;
+  private armorTimer?: Phaser.Time.TimerEvent;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'knight_silver', 0);
@@ -17,6 +20,37 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.body.setCollideWorldBounds(true);
     this.cursors = scene.input.keyboard!.createCursorKeys();
     this.play('knight-idle');
+  }
+
+  takeDamage(amount: number) {
+    if (this.hasGoldenArmor || this.health <= 0) return;
+
+    this.health = Math.max(0, this.health - amount);
+    this.emit('health-changed', this.health);
+
+    if (this.health === 0) {
+      this.emit('defeated');
+      this.setActive(false);
+      this.anims.stop();
+      // 14 — пятнадцатый кадр спрайта: рыцарь лежит поверженным.
+      this.setFrame(14);
+      this.body.enable = false;
+    }
+  }
+
+  heal(amount: number) {
+    this.health = Math.min(PLAYER_MAX_HEALTH, this.health + amount);
+    this.emit('health-changed', this.health);
+  }
+
+  wearGoldenArmor() {
+    this.hasGoldenArmor = true;
+    this.emit('armor-changed', true);
+    this.armorTimer?.remove(false);
+    this.armorTimer = this.scene.time.delayedCall(GOLDEN_ARMOR_DURATION, () => {
+      this.hasGoldenArmor = false;
+      this.emit('armor-changed', false);
+    });
   }
 
   update() {

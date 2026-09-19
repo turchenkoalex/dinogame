@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, DRAGON_ATTACK_DISTANCE, TERRAIN_TILE_WIDTH, GROUND_BODY_OFFSET_Y } from '../config';
+import { GAME_WIDTH, DRAGON_ATTACK_DISTANCE, TERRAIN_TILE_WIDTH, GROUND_BODY_OFFSET_Y, PLAYER_ATTACK_DAMAGE, DRAGON_ATTACK_DAMAGE, HEALTH_MUSHROOM_HEAL } from '../config';
 import { Player } from '../player/Player';
 import { Enemy } from '../objects/Enemy';
 
@@ -58,6 +58,30 @@ export class Level1Scene extends Phaser.Scene {
     this.player = new Player(this, 100, 600);
     this.physics.add.collider(this.player, platforms);
     const dragon = new Enemy(this, 1050, 660);
+    // Временный гриб стоит на первой плавающей платформе.
+    const mushroom = this.add.circle(320, 522, 16, 0xe85d75);
+    this.physics.add.existing(mushroom, true);
+
+    const healthText = this.add.text(32, 118, '', {
+      fontSize: '22px', color: '#172b3a',
+    });
+    const updateHealthText = () => {
+      const armorText = this.player.hasGoldenArmor ? '  Золотая броня' : '';
+      healthText.setText(`Рыцарь: ${this.player.health}/100${armorText}    Дракон: ${dragon.health}/200`);
+    };
+    updateHealthText();
+
+    this.player.on('health-changed', updateHealthText);
+    this.player.on('armor-changed', updateHealthText);
+    dragon.on('health-changed', updateHealthText);
+    this.physics.add.overlap(this.player, mushroom, () => {
+      this.player.heal(HEALTH_MUSHROOM_HEAL);
+      this.player.wearGoldenArmor();
+      mushroom.destroy();
+      updateHealthText();
+    });
+    this.player.on('defeated', () => healthText.setText('Рыцарь повержен'));
+    dragon.on('defeated', () => healthText.setText('Дракон повержен'));
 
     this.player.on('attack-start', () => {
       // Сравниваем позиции у ног, учитывая и расстояние по высоте.
@@ -67,7 +91,16 @@ export class Level1Scene extends Phaser.Scene {
       );
 
       if (distance <= DRAGON_ATTACK_DISTANCE) {
+        dragon.takeDamage(PLAYER_ATTACK_DAMAGE);
         dragon.attack();
+      }
+    });
+    dragon.on('animationcomplete-dragon-fire', () => {
+      if (dragon.health > 0 && this.player.health > 0) {
+        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, dragon.x, dragon.y);
+        if (distance <= DRAGON_ATTACK_DISTANCE) {
+          this.player.takeDamage(DRAGON_ATTACK_DAMAGE);
+        }
       }
     });
     this.restartKey = this.input.keyboard!.addKey('R');

@@ -58,6 +58,8 @@ export class BootScene extends Phaser.Scene {
     texture.add(9, 0, 1366, 294, 120, 200);
     texture.add(10, 0, 1502, 294, 138, 200)!.setTrim(120, 200, 0, 0, 138, 200);
     texture.add(11, 0, 1644, 294, 196, 200)!.setTrim(120, 200, 0, 0, 196, 200);
+    // 14 (пятнадцатый кадр) — рыцарь лежит поверженным.
+    texture.add(14, 0, 1850, 294, 322, 200);
 
     this.anims.create({
       key: 'knight-idle',
@@ -95,6 +97,8 @@ export class BootScene extends Phaser.Scene {
     dragonTexture.add(7, 0, 1169, 306, 172, 162)!.setTrim(167, 162, -5, 0, 172, 162);
     dragonTexture.add(8, 0, 1347, 306, 202, 162)!.setTrim(167, 162, -35, 0, 202, 162);
     dragonTexture.add(9, 0, 1560, 306, 252, 162)!.setTrim(167, 162, -85, 0, 252, 162);
+    // 11 (двенадцатый кадр) — дракон лежит поверженным.
+    dragonTexture.add(11, 0, 1810, 294, 354, 200);
 
     this.anims.create({
       key: 'dragon-idle',
