@@ -12,6 +12,14 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
+    this.createKnightAnimations();
+    this.createDragonAnimations();
+
+    // Позже здесь можно перейти в MenuScene, а пока сразу играем.
+    this.scene.start('Level1Scene');
+  }
+
+  private createKnightAnimations() {
     const texture = this.textures.get('knight_silver');
 
     // Координаты кадров в PNG размером 2172×724. x растёт вправо.
@@ -49,7 +57,9 @@ export class BootScene extends Phaser.Scene {
       frameRate: PLAYER_ATTACK_FRAME_RATE,
       repeat: 0,
     });
+  }
 
+  private createDragonAnimations() {
     // Текущий dragon.png — 2172×724, без ровной сетки 96×96.
     // Первые три позы вырезаем вручную, сохраняя общую линию земли.
     const dragonTexture = this.textures.get('dragon');
@@ -78,7 +88,5 @@ export class BootScene extends Phaser.Scene {
       repeat: 0,
     });
 
-    // Позже здесь можно перейти в MenuScene, а пока сразу играем.
-    this.scene.start('Level1Scene');
   }
 }
