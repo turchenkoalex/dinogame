@@ -7,12 +7,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   health = DRAGON_MAX_HEALTH;
   private hurtTimer?: Phaser.Time.TimerEvent;
   private attackPending = false;
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, sizeMultiplier = 1) {
     super(scene, x, y, 'dragon', 0);
     scene.add.existing(this);
     // y обозначает землю под ногами. На картинке дракон уже смотрит влево.
     this.setOrigin(0.5, 1);
-    this.setScale(DRAGON_SCALE);
+    this.setScale(DRAGON_SCALE * sizeMultiplier);
     scene.physics.add.existing(this);
     // Постоянная рамка тела без огня; её нижняя граница проходит по лапам.
     this.body.setSize(147, 150);

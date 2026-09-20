@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, PLAYER_MAX_HEALTH } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, PLAYER_MAX_HEALTH, DRAGON_MAX_HEALTH } from '../config';
 import { addGround } from '../objects/Ground';
 import { addHealthBar } from '../objects/HealthBar';
 import { Player } from '../player/Player';
+import { Enemy } from '../objects/Enemy';
+import { connectDragonCombat } from '../objects/DragonCombat';
 
 export class DungeonScene extends Phaser.Scene {
   private player!: Player;
@@ -23,6 +25,11 @@ export class DungeonScene extends Phaser.Scene {
     this.player.health = data.health ?? this.player.health;
     this.physics.add.collider(this.player, ground);
     addHealthBar(this, this.player, PLAYER_MAX_HEALTH, 'Рыцарь', 24, 20);
+
+    const dragon = new Enemy(this, 1080, 668, 2);
+    this.physics.add.collider(dragon, ground);
+    addHealthBar(this, dragon, DRAGON_MAX_HEALTH, 'Дракон', GAME_WIDTH - 268, 20);
+    connectDragonCombat(this.player, dragon, 2);
   }
 
   private addTorches() {
