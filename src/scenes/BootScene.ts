@@ -7,6 +7,11 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.spritesheet('health_mushroom', `${import.meta.env.BASE_URL}assets/images/health_mushroom.png`, {
+      frameWidth: 48,
+      frameHeight: 48,
+      endFrame: 5,
+    });
     this.load.image('knight_silver', `${import.meta.env.BASE_URL}assets/images/knight_silver.png`);
     this.load.image('dragon', `${import.meta.env.BASE_URL}assets/images/dragon.png`);
     this.load.image('terrain', `${import.meta.env.BASE_URL}assets/images/ground.png`);
@@ -14,6 +19,12 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
+    this.anims.create({
+      key: 'health-mushroom-fly',
+      frames: this.anims.generateFrameNumbers('health_mushroom', { start: 0, end: 4 }),
+      frameRate: 9,
+      repeat: -1,
+    });
     this.createKnightAnimations();
     this.createDragonAnimations();
     this.createTerrainFrames();

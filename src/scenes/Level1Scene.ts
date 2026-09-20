@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, DRAGON_ATTACK_DISTANCE, TERRAIN_TILE_WIDTH, GROUND_BODY_OFFSET_Y, PLAYER_ATTACK_DAMAGE, DRAGON_ATTACK_DAMAGE, HEALTH_MUSHROOM_HEAL } from '../config';
 import { Player } from '../player/Player';
 import { Enemy } from '../objects/Enemy';
+import { Collectible } from '../objects/Collectible';
 
 export class Level1Scene extends Phaser.Scene {
   private player!: Player;
@@ -60,9 +61,7 @@ export class Level1Scene extends Phaser.Scene {
     // Гравитация и столкновения ставят дракона на поверхность земли.
     const dragon = new Enemy(this, 1050, 660);
     this.physics.add.collider(dragon, platforms);
-    // Временный гриб стоит на первой плавающей платформе.
-    const mushroom = this.add.circle(320, 522, 16, 0xe85d75);
-    this.physics.add.existing(mushroom, true);
+    const mushroom = new Collectible(this, 320, 522);
 
     const healthText = this.add.text(32, 118, '', {
       fontSize: '22px', color: '#172b3a',
@@ -77,9 +76,9 @@ export class Level1Scene extends Phaser.Scene {
     this.player.on('armor-changed', updateHealthText);
     dragon.on('health-changed', updateHealthText);
     this.physics.add.overlap(this.player, mushroom, () => {
+      if (!mushroom.collect()) return;
       this.player.heal(HEALTH_MUSHROOM_HEAL);
       this.player.wearGoldenArmor();
-      mushroom.destroy();
       updateHealthText();
     });
     this.player.on('defeated', () => healthText.setText('Рыцарь повержен'));
