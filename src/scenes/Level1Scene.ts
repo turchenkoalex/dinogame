@@ -31,17 +31,16 @@ export class Level1Scene extends Phaser.Scene {
     }
 
     // x/y — левый верхний угол изображения; одинаковый масштаб по обеим осям.
-    // Подъём 104 px меньше высоты существующего прыжка (~141 px).
+    // Три ступени по рисунку: короткая у дыры, средняя и верхняя справа.
+    // Подъём не больше 104 px при высоте существующего прыжка ~141 px.
     const platformPositions = [
-      { x: 160, y: 508 },
-      { x: 350, y: 404 },
-      { x: 540, y: 300 },
-      { x: 730, y: 196 },
-      { x: 920, y: 92 },
+      { x: 560, y: 508, frames: [5, 6] },
+      { x: 700, y: 404, frames: [5, 4, 6] },
+      { x: 880, y: 320, frames: [5, 4, 6] },
     ];
     for (const platform of platformPositions) {
       let x = platform.x;
-      for (const frame of [5, 4, 6]) {
+      for (const frame of platform.frames) {
         const tile = this.add.image(x, platform.y, 'terrain', frame)
           .setOrigin(0, 0).setScale(0.25);
         x += tile.displayWidth;
@@ -52,14 +51,17 @@ export class Level1Scene extends Phaser.Scene {
       platforms.add(surface);
     }
 
+    // Основание указателя стоит на земле; декорация не мешает движению.
+    this.add.image(210, 628, 'sign').setOrigin(0.5, 1).setScale(0.1);
+
     this.player = new Player(this, 100, 580);
     this.physics.add.collider(this.player, platforms);
     const dragon = new Enemy(this, 1080, 628);
     this.physics.add.collider(dragon, platforms);
     const mushrooms = [
-      new Collectible(this, 260, 480),
-      new Collectible(this, 640, 272),
-      new Collectible(this, 1020, 64),
+      new Collectible(this, 620, 480),
+      new Collectible(this, 790, 376),
+      new Collectible(this, 974, 292),
     ];
 
     // Только локальный overlap под дырой ведёт в подземелье.

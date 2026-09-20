@@ -10,7 +10,7 @@ export class Collectible extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this, true);
     this.body.setSize(24, 28);
-    this.setScale(1.4);
+    this.setScale(1.2);
     this.play('health-mushroom-fly');
   }
 
