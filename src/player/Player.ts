@@ -54,12 +54,31 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   wearGoldenArmor() {
     this.hasGoldenArmor = true;
+    this.updateArmorTexture();
     this.emit('armor-changed', true);
     this.armorTimer?.remove(false);
     this.armorTimer = this.scene.time.delayedCall(GOLDEN_ARMOR_DURATION, () => {
       this.hasGoldenArmor = false;
+      this.updateArmorTexture();
       this.emit('armor-changed', false);
     });
+  }
+
+  private animationKey(action: string): string {
+    return `knight-${this.hasGoldenArmor ? 'gold-' : ''}${action}`;
+  }
+
+  private updateArmorTexture() {
+    const animation = this.anims.currentAnim;
+    const playing = this.anims.isPlaying;
+    const frame = this.frame.name;
+    const frameIndex = this.anims.currentFrame?.index ?? 1;
+    this.anims.stop();
+    this.setTexture(this.hasGoldenArmor ? 'knight_gold' : 'knight_silver', frame);
+    if (playing && animation) {
+      const action = animation.key.split('-').pop()!;
+      this.play({ key: this.animationKey(action), startFrame: frameIndex - 1 });
+    }
   }
 
   update() {
@@ -86,10 +105,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // Удерживаем позу урона, чтобы ходьба, прыжок и атака не сменили её сразу.
     if (this.scene.time.now < this.hurtUntil) return;
 
-    const isAttacking = this.anims.currentAnim?.key === 'knight-attack' && this.anims.isPlaying;
+    const isAttacking = this.anims.currentAnim?.key === this.animationKey('attack') && this.anims.isPlaying;
 
     if (spacePressed && !isAttacking) {
-      this.play('knight-attack');
+      this.play(this.animationKey('attack'));
       // Сообщаем уровню о начале нового взмаха мечом.
       this.emit('attack-start');
     }
@@ -104,9 +123,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setFrame(this.body.velocity.y < 0 ? 8 : 9);
     } else if (this.body.velocity.x !== 0) {
       // true не даёт запускать анимацию заново при каждом обновлении игры.
-      this.play('knight-walk', true);
+      this.play(this.animationKey('walk'), true);
     } else {
-      this.play('knight-idle', true);
+      this.play(this.animationKey('idle'), true);
     }
   }
 }
