@@ -17,6 +17,19 @@ export class Level1Scene extends Phaser.Scene {
 
   create() {
     this.transitioning = false;
+    const clouds = [
+      { x: 120, y: 150, scale: 0.14 },
+      { x: 380, y: 235, scale: 0.18 },
+      { x: 640, y: 125, scale: 0.16 },
+      { x: 880, y: 205, scale: 0.13 },
+      { x: 1140, y: 140, scale: 0.19 },
+    ];
+    for (const cloud of clouds) {
+      this.add.image(cloud.x, cloud.y, 'cloud')
+        .setScale(cloud.scale)
+        .setDepth(-1);
+    }
+
     // Камера фиксирована, но физический мир продолжается ниже экрана.
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT + 160);
     const platforms = this.physics.add.staticGroup();

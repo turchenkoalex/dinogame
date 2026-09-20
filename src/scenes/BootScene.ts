@@ -16,6 +16,7 @@ export class BootScene extends Phaser.Scene {
     this.load.image('dragon', `${import.meta.env.BASE_URL}assets/images/dragon.png`);
     this.load.image('terrain', `${import.meta.env.BASE_URL}assets/images/ground.png`);
     this.load.image('sign', `${import.meta.env.BASE_URL}assets/images/sign.png`);
+    this.load.image('cloud', `${import.meta.env.BASE_URL}assets/images/cloud.png`);
     this.load.image('ground_middle', `${import.meta.env.BASE_URL}assets/images/ground_middle.png`);
   }
 
