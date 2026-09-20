@@ -16,7 +16,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
     // Постоянная рамка тела без огня; её нижняя граница проходит по лапам.
     this.body.setSize(147, 150);
-    this.body.setOffset(10, 12);
     this.body.setCollideWorldBounds(true);
     this.play('dragon-idle');
 

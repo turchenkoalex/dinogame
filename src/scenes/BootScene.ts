@@ -117,7 +117,7 @@ export class BootScene extends Phaser.Scene {
     // 10 — получение урона, поза непосредственно перед смертью.
     dragonTexture.add(10, 0, 1812, 306, 164, 162)!.setTrim(167, 162, 0, 0, 164, 162);
     // 11 (двенадцатый кадр) — дракон лежит поверженным.
-    dragonTexture.add(11, 0, 1976, 294, 303, 200)!
+    dragonTexture.add(11, 0, 1976, 306, 186, 162);
 
 
     this.anims.create({

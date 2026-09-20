@@ -23,7 +23,6 @@ export class DungeonScene extends Phaser.Scene {
     this.player.health = data.health ?? this.player.health;
     this.physics.add.collider(this.player, ground);
     addHealthBar(this, this.player, PLAYER_MAX_HEALTH, 'Рыцарь', 24, 20);
-    this.add.text(32, 108, 'Dungeon', { fontSize: '28px', color: '#ffffff' });
   }
 
   private addTorches() {
