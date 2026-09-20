@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
+import { TouchControls } from './TouchControls';
 import { PLAYER_SPEED, PLAYER_JUMP_VELOCITY, PLAYER_MAX_HEALTH, GOLDEN_ARMOR_DURATION } from '../config';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  private touchControls?: TouchControls;
   health = PLAYER_MAX_HEALTH;
   hasGoldenArmor = false;
   private armorTimer?: Phaser.Time.TimerEvent;
@@ -20,6 +22,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.body.setOffset(10, 44);
     this.body.setCollideWorldBounds(true);
     this.cursors = scene.input.keyboard!.createCursorKeys();
+    if (scene.game.device.input.touch) this.touchControls = new TouchControls(scene);
     this.play('knight-idle');
   }
 
@@ -63,20 +66,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
+    const touch = this.touchControls?.read();
     if (!this.isLive()) return;
 
     this.body.setVelocityX(0);
 
-    if (this.cursors.left.isDown) {
+    if (this.cursors.left.isDown || touch?.left) {
       this.body.setVelocityX(-PLAYER_SPEED);
       this.setFlipX(true);
-    } else if (this.cursors.right.isDown) {
+    } else if (this.cursors.right.isDown || touch?.right) {
       this.body.setVelocityX(PLAYER_SPEED);
       this.setFlipX(false);
     }
 
-    const spacePressed = Phaser.Input.Keyboard.JustDown(this.cursors.space);
-    const upPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up);
+    const spacePressed = Phaser.Input.Keyboard.JustDown(this.cursors.space) || touch?.attack;
+    const upPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up) || touch?.jump;
 
     // Прыгаем только с опоры и только при новом нажатии клавиши.
     if (upPressed && this.body.blocked.down) {
