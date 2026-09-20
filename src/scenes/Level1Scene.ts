@@ -100,7 +100,10 @@ export class Level1Scene extends Phaser.Scene {
         dragon.x, dragon.y,
       );
 
-      if (distance <= DRAGON_ATTACK_DISTANCE) {
+      // Рыцарь без отражения смотрит вправо: меч не задевает цели за спиной.
+      const targetOffsetX = dragon.body.center.x - this.player.body.center.x;
+      const isInFront = this.player.flipX ? targetOffsetX < 0 : targetOffsetX > 0;
+      if (distance <= DRAGON_ATTACK_DISTANCE && isInFront) {
         dragon.takeDamage(PLAYER_ATTACK_DAMAGE);
         dragon.attack();
       }
@@ -108,7 +111,11 @@ export class Level1Scene extends Phaser.Scene {
     dragon.on('animationcomplete-dragon-fire', () => {
       if (dragon.health > 0 && this.player.health > 0) {
         const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, dragon.x, dragon.y);
-        if (distance <= DRAGON_ATTACK_DISTANCE) {
+        // Исходный спрайт дракона смотрит влево. Проверяем сторону при попадании,
+        // чтобы рыцарь мог успеть перебежать за его спину во время выдоха.
+        const targetOffsetX = this.player.body.center.x - dragon.body.center.x;
+        const isInFront = dragon.flipX ? targetOffsetX > 0 : targetOffsetX < 0;
+        if (distance <= DRAGON_ATTACK_DISTANCE && isInFront) {
           this.player.takeDamage(DRAGON_ATTACK_DAMAGE);
         }
       }
