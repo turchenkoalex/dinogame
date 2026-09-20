@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, DRAGON_ATTACK_DISTANCE, TERRAIN_TILE_WIDTH, GROUND_BODY_OFFSET_Y, PLAYER_ATTACK_DAMAGE, DRAGON_ATTACK_DAMAGE, HEALTH_MUSHROOM_HEAL } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, DRAGON_ATTACK_DISTANCE, GROUND_BODY_OFFSET_Y, PLAYER_ATTACK_DAMAGE, DRAGON_ATTACK_DAMAGE, HEALTH_MUSHROOM_HEAL } from '../config';
 import { Player } from '../player/Player';
 import { Enemy } from '../objects/Enemy';
 import { Collectible } from '../objects/Collectible';
 
 export class Level1Scene extends Phaser.Scene {
   private player!: Player;
+  private transitioning = false;
   private restartKey!: Phaser.Input.Keyboard.Key;
 
   constructor() {
@@ -13,57 +14,65 @@ export class Level1Scene extends Phaser.Scene {
   }
 
   create() {
+    this.transitioning = false;
+    // Камера фиксирована, но физический мир продолжается ниже экрана.
+    this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT + 160);
     const platforms = this.physics.add.staticGroup();
+    const hole = { x: 704, width: 128 };
 
-    // Тайл 64×64 без масштабирования. Верх земли остаётся на y = 660.
-    const GROUND_Y = 692;
+    // Два ряда земли. В обоих рядах над входом нет ни спрайтов, ни тел.
     for (let x = 32; x < GAME_WIDTH; x += 64) {
-      const ground = platforms.create(x, GROUND_Y, 'ground_middle');
-      ground.refreshBody();
-      // Картинка остаётся на месте, а физическая рамка начинается ниже.
-      ground.body.setOffset(0, GROUND_BODY_OFFSET_Y);
-    }
-
-    // x и y — центр платформы. В Phaser координата y растёт вниз.
-    const platformPositions = [
-      { x: 320, y: 550, width: 220, height: 24, ground: false },
-      { x: 590, y: 445, width: 200, height: 24, ground: false },
-      { x: 850, y: 340, width: 200, height: 24, ground: false },
-      { x: 1100, y: 235, width: 180, height: 24, ground: false },
-    ];
-
-    for (const platform of platformPositions) {
-      const rectangle = this.add.rectangle(
-        platform.x, platform.y, platform.width, platform.height, 0x427a55,
-      );
-      // Один невидимый прямоугольник сохраняет ровные столкновения без стыков.
-      rectangle.setVisible(false);
-      platforms.add(rectangle);
-
-      const tileCount = Math.max(2, Math.ceil(platform.width / TERRAIN_TILE_WIDTH));
-      const tileWidth = platform.width / tileCount;
-      const left = platform.x - platform.width / 2;
-      const top = platform.y - platform.height / 2;
-
-      for (let column = 0; column < tileCount; column++) {
-        let frame = platform.ground ? column % 2 : 4;
-        if (column === 0) frame = platform.ground ? 2 : 5;
-        if (column === tileCount - 1) frame = platform.ground ? 3 : 6;
-
-        this.add.image(left + column * tileWidth, top - 4, 'terrain', frame)
-          .setOrigin(0, 0)
-          .setDisplaySize(tileWidth, platform.height);
+      if (x >= hole.x && x < hole.x + hole.width) continue;
+      for (const y of [652, 716]) {
+        const ground = platforms.create(x, y, 'ground_middle');
+        ground.refreshBody();
+        ground.body.setOffset(0, GROUND_BODY_OFFSET_Y);
       }
     }
 
-    this.player = new Player(this, 100, 600);
-    this.physics.add.collider(this.player, platforms);
-    // Гравитация и столкновения ставят дракона на поверхность земли.
-    const dragon = new Enemy(this, 1050, 660);
-    this.physics.add.collider(dragon, platforms);
-    const mushroom = new Collectible(this, 320, 522);
+    // x/y — левый верхний угол изображения; одинаковый масштаб по обеим осям.
+    // Подъём 104 px меньше высоты существующего прыжка (~141 px).
+    const platformPositions = [
+      { x: 160, y: 508 },
+      { x: 350, y: 404 },
+      { x: 540, y: 300 },
+      { x: 730, y: 196 },
+      { x: 920, y: 92 },
+    ];
+    for (const platform of platformPositions) {
+      let x = platform.x;
+      for (const frame of [5, 4, 6]) {
+        const tile = this.add.image(x, platform.y, 'terrain', frame)
+          .setOrigin(0, 0).setScale(0.25);
+        x += tile.displayWidth;
+      }
+      // Одно ровное тело на всю полосу, без стыков между тайлами.
+      const surface = this.add.zone(platform.x, platform.y + 4, x - platform.x, 18)
+        .setOrigin(0, 0);
+      platforms.add(surface);
+    }
 
-    const healthText = this.add.text(32, 118, '', {
+    this.player = new Player(this, 100, 580);
+    this.physics.add.collider(this.player, platforms);
+    const dragon = new Enemy(this, 1080, 628);
+    this.physics.add.collider(dragon, platforms);
+    const mushrooms = [
+      new Collectible(this, 260, 480),
+      new Collectible(this, 640, 272),
+      new Collectible(this, 1020, 64),
+    ];
+
+    // Только локальный overlap под дырой ведёт в подземелье.
+    // Zone невидима, но её Arcade body виден в physics debug.
+    const dungeonTrigger = this.add.zone(hole.x + hole.width / 2, 708, hole.width, 24);
+    this.physics.add.existing(dungeonTrigger, true);
+    this.physics.add.overlap(this.player, dungeonTrigger, () => {
+      if (this.transitioning || !this.player.isLive()) return;
+      this.transitioning = true;
+      this.scene.start('DungeonScene', { health: this.player.health });
+    });
+
+    const healthText = this.add.text(32, 24, '', {
       fontSize: '22px', color: '#172b3a',
     });
     const updateHealthText = () => {
@@ -75,12 +84,14 @@ export class Level1Scene extends Phaser.Scene {
     this.player.on('health-changed', updateHealthText);
     this.player.on('armor-changed', updateHealthText);
     dragon.on('health-changed', updateHealthText);
-    this.physics.add.overlap(this.player, mushroom, () => {
-      if (!mushroom.collect()) return;
-      this.player.heal(HEALTH_MUSHROOM_HEAL);
-      this.player.wearGoldenArmor();
-      updateHealthText();
-    });
+    for (const mushroom of mushrooms) {
+      this.physics.add.overlap(this.player, mushroom, () => {
+        if (!mushroom.collect()) return;
+        this.player.heal(HEALTH_MUSHROOM_HEAL);
+        this.player.wearGoldenArmor();
+        updateHealthText();
+      });
+    }
     this.player.on('defeated', () => healthText.setText('Рыцарь повержен'));
     dragon.on('defeated', () => healthText.setText('Дракон повержен'));
 

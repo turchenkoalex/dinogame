@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, GRAVITY } from './config';
 import { BootScene } from './scenes/BootScene';
 import { MenuScene } from './scenes/MenuScene';
+import { DungeonScene } from './scenes/DungeonScene';
 import { Level1Scene } from './scenes/Level1Scene';
 
 new Phaser.Game({
@@ -22,5 +23,5 @@ new Phaser.Game({
       debug: import.meta.env.DEV,
     },
   },
-  scene: [BootScene, MenuScene, Level1Scene],
+  scene: [BootScene, MenuScene, Level1Scene, DungeonScene],
 });
