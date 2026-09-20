@@ -29,6 +29,7 @@ export class BootScene extends Phaser.Scene {
     this.createKnightAnimations();
     this.createDragonAnimations();
     this.createTerrainFrames();
+    this.textures.get('ground_middle').add('soil', 0, 0, 24, 64, 40);
 
     // Позже здесь можно перейти в MenuScene, а пока сразу играем.
     this.scene.start('Level1Scene');

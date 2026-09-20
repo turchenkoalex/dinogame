@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, DRAGON_ATTACK_DISTANCE, GROUND_BODY_OFFSET_Y, PLAYER_ATTACK_DAMAGE, DRAGON_ATTACK_DAMAGE, HEALTH_MUSHROOM_HEAL } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, DRAGON_ATTACK_DISTANCE, PLAYER_ATTACK_DAMAGE, DRAGON_ATTACK_DAMAGE, HEALTH_MUSHROOM_HEAL, PLAYER_MAX_HEALTH, DRAGON_MAX_HEALTH } from '../config';
 import { Player } from '../player/Player';
 import { Enemy } from '../objects/Enemy';
+import { addGround } from '../objects/Ground';
+import { addHealthBar } from '../objects/HealthBar';
 import { Collectible } from '../objects/Collectible';
 
 export class Level1Scene extends Phaser.Scene {
@@ -20,15 +22,9 @@ export class Level1Scene extends Phaser.Scene {
     const platforms = this.physics.add.staticGroup();
     const hole = { x: 704, width: 128 };
 
-    // Два ряда земли. В обоих рядах над входом нет ни спрайтов, ни тел.
-    for (let x = 32; x < GAME_WIDTH; x += 64) {
-      if (x >= hole.x && x < hole.x + hole.width) continue;
-      for (const y of [652, 716]) {
-        const ground = platforms.create(x, y, 'ground_middle');
-        ground.refreshBody();
-        ground.body.setOffset(0, GROUND_BODY_OFFSET_Y);
-      }
-    }
+    // Два независимых участка, между ними — настоящий вход в подземелье.
+    addGround(this, platforms, 0, 620, hole.x);
+    addGround(this, platforms, hole.x + hole.width, 620, GAME_WIDTH - hole.x - hole.width);
 
     // x/y — левый верхний угол изображения; одинаковый масштаб по обеим осям.
     // Три ступени по рисунку: короткая у дыры, средняя и верхняя справа.
@@ -74,28 +70,15 @@ export class Level1Scene extends Phaser.Scene {
       this.scene.start('DungeonScene', { health: this.player.health });
     });
 
-    const healthText = this.add.text(32, 24, '', {
-      fontSize: '22px', color: '#172b3a',
-    });
-    const updateHealthText = () => {
-      const armorText = this.player.hasGoldenArmor ? '  Золотая броня' : '';
-      healthText.setText(`Рыцарь: ${this.player.health}/100${armorText}    Дракон: ${dragon.health}/200`);
-    };
-    updateHealthText();
-
-    this.player.on('health-changed', updateHealthText);
-    this.player.on('armor-changed', updateHealthText);
-    dragon.on('health-changed', updateHealthText);
+    addHealthBar(this, this.player, PLAYER_MAX_HEALTH, 'Рыцарь', 24, 20);
+    addHealthBar(this, dragon, DRAGON_MAX_HEALTH, 'Дракон', GAME_WIDTH - 268, 20);
     for (const mushroom of mushrooms) {
       this.physics.add.overlap(this.player, mushroom, () => {
         if (!mushroom.collect()) return;
         this.player.heal(HEALTH_MUSHROOM_HEAL);
         this.player.wearGoldenArmor();
-        updateHealthText();
       });
     }
-    this.player.on('defeated', () => healthText.setText('Рыцарь повержен'));
-    dragon.on('defeated', () => healthText.setText('Дракон повержен'));
 
     this.player.on('attack-start', () => {
       // Сравниваем позиции у ног, учитывая и расстояние по высоте.
