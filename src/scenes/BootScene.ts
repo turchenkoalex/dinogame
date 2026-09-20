@@ -8,7 +8,6 @@ export class BootScene extends Phaser.Scene {
 
   preload() {
     this.load.image('knight_silver', `${import.meta.env.BASE_URL}assets/images/knight_silver.png`);
-    this.load.image('knight_gold', `${import.meta.env.BASE_URL}assets/images/knight_gold.png`);
     this.load.image('dragon', `${import.meta.env.BASE_URL}assets/images/dragon.png`);
     this.load.image('terrain', `${import.meta.env.BASE_URL}assets/images/ground.png`);
     this.load.image('ground_middle', `${import.meta.env.BASE_URL}assets/images/ground_middle.png`);
@@ -16,7 +15,6 @@ export class BootScene extends Phaser.Scene {
 
   create() {
     this.createKnightAnimations();
-    this.createGoldenKnightAnimations();
     this.createDragonAnimations();
     this.createTerrainFrames();
 
@@ -85,44 +83,6 @@ export class BootScene extends Phaser.Scene {
       frameRate: PLAYER_ATTACK_FRAME_RATE,
       repeat: 0,
     });
-  }
-
-  private createGoldenKnightAnimations() {
-    const texture = this.textures.get('knight_gold');
-    // Золотой рыцарь: отдельная разметка PNG 2098×750.
-    // Кадры сохраняют логический размер 120×200 и общую линию ног.
-    const poses = [
-      { frame: 0, x: 20, width: 125 },
-      { frame: 1, x: 155, width: 125 },
-      { frame: 2, x: 280, width: 125 },
-      { frame: 3, x: 410, width: 140 },
-      { frame: 4, x: 555, width: 135 },
-      { frame: 5, x: 690, width: 135 },
-      { frame: 6, x: 830, width: 145 },
-      { frame: 7, x: 975, width: 150 },
-      { frame: 8, x: 1120, width: 130 },
-      { frame: 9, x: 1260, width: 130 },
-      { frame: 10, x: 1400, width: 130 },
-      { frame: 11, x: 1548, width: 195 },
-      { frame: 13, x: 1745, width: 122 },
-      { frame: 14, x: 1868, width: 210 },
-    ];
-    for (const { frame, x, width } of poses) {
-      texture.add(frame, 0, x, 260, width, 226)!.setTrim(120, 200, 0, -26, width, 226);
-    }
-
-    for (const [action, start, end, frameRate, repeat] of [
-      ['idle', 0, 3, PLAYER_IDLE_FRAME_RATE, -1],
-      ['walk', 4, 7, PLAYER_WALK_FRAME_RATE, -1],
-      ['attack', 10, 11, PLAYER_ATTACK_FRAME_RATE, 0],
-    ] as const) {
-      this.anims.create({
-        key: `knight-gold-${action}`,
-        frames: this.anims.generateFrameNumbers('knight_gold', { start, end }),
-        frameRate,
-        repeat,
-      });
-    }
   }
 
   private createDragonAnimations() {
