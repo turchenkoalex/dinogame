@@ -1,13 +1,14 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config';
 
-type Action = 'left' | 'right' | 'jump' | 'attack';
+type Action = 'left' | 'right' | 'jump' | 'attack' | 'dash';
 
 export class TouchControls {
   private held = new Map<number, Action>();
   private buttons = new Map<Action, Phaser.GameObjects.Arc>();
   private jumpPressed = false;
   private attackPressed = false;
+  private dashPressed = false;
 
   constructor(scene: Phaser.Scene) {
     const addButton = (action: Action, x: number, y: number, symbol: string) => {
@@ -22,6 +23,7 @@ export class TouchControls {
         this.held.set(pointer.id, action);
         if (action === 'jump') this.jumpPressed = true;
         if (action === 'attack') this.attackPressed = true;
+        if (action === 'dash') this.dashPressed = true;
         this.refresh();
       };
       button.on('pointerdown', press);
@@ -39,13 +41,14 @@ export class TouchControls {
     };
     const reset = () => {
       this.held.clear();
-      this.jumpPressed = this.attackPressed = false;
+      this.jumpPressed = this.attackPressed = this.dashPressed = false;
       this.refresh();
     };
     addButton('left', 84, GAME_HEIGHT - 76, '←');
     addButton('right', 204, GAME_HEIGHT - 76, '→');
     addButton('jump', GAME_WIDTH - 84, GAME_HEIGHT - 196, '↑');
     addButton('attack', GAME_WIDTH - 84, GAME_HEIGHT - 76, '○');
+    addButton('dash', GAME_WIDTH - 204, GAME_HEIGHT - 76, '»');
     scene.input.on('pointerup', release);
     scene.input.on('pointerupoutside', release);
     scene.input.on('gameout', reset);
@@ -75,9 +78,9 @@ export class TouchControls {
   read() {
     const input = {
       left: this.isHeld('left'), right: this.isHeld('right'),
-      jump: this.jumpPressed, attack: this.attackPressed,
+      jump: this.jumpPressed, attack: this.attackPressed, dash: this.dashPressed,
     };
-    this.jumpPressed = this.attackPressed = false;
+    this.jumpPressed = this.attackPressed = this.dashPressed = false;
     return input;
   }
 }

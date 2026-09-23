@@ -12,6 +12,10 @@ export const PLAYER_SPEED = 280;
 
 // Минус направляет прыжок вверх. Попробуй -650 для более высокого прыжка.
 export const PLAYER_JUMP_VELOCITY = -650;
+export const PLAYER_AIR_JUMP_VELOCITY = -570;
+export const PLAYER_DASH_SPEED = 750;
+export const PLAYER_DASH_DURATION = 180;
+export const PLAYER_DASH_COOLDOWN = 1100;
 
 // Чем больше число, тем быстрее персонаж падает на землю.
 export const GRAVITY = 1500;
@@ -29,6 +33,8 @@ export const DRAGON_IDLE_FRAME_RATE = 5;
 
 // Увеличь число, чтобы дракон отвечал на взмах мечом с большей дистанции.
 export const DRAGON_ATTACK_DISTANCE = 140;
+export const DRAGON_NOTICE_DISTANCE = 360;
+export const DRAGON_ATTACK_COOLDOWN = 2800;
 // Три кадра при скорости 3 кадра/сек дают выдох длиной в одну секунду.
 export const DRAGON_ATTACK_FRAME_RATE = 3;
 

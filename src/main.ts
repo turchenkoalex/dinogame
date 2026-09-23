@@ -4,6 +4,8 @@ import { BootScene } from './scenes/BootScene';
 import { MenuScene } from './scenes/MenuScene';
 import { DungeonScene } from './scenes/DungeonScene';
 import { Level1Scene } from './scenes/Level1Scene';
+import { VictoryScene } from './scenes/VictoryScene';
+import { SkyIslandsScene } from './scenes/SkyIslandsScene';
 
 new Phaser.Game({
   type: Phaser.AUTO,
@@ -21,8 +23,8 @@ new Phaser.Game({
     arcade: {
       gravity: { x: 0, y: GRAVITY },
       // В локальной разработке видны физические рамки, на GitHub Pages — нет.
-      debug: import.meta.env.DEV,
+      debug: false,
     },
   },
-  scene: [BootScene, MenuScene, Level1Scene, DungeonScene],
+  scene: [BootScene, MenuScene, Level1Scene, DungeonScene, SkyIslandsScene, VictoryScene],
 });

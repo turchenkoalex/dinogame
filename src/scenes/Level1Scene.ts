@@ -6,18 +6,21 @@ import { connectDragonCombat } from '../objects/DragonCombat';
 import { addGround } from '../objects/Ground';
 import { addHealthBar } from '../objects/HealthBar';
 import { Collectible } from '../objects/Collectible';
+import { LevelState, restorePlayer, playerState, fadeTo, addDefeatPrompt } from './sceneHelpers';
 
 export class Level1Scene extends Phaser.Scene {
   private player!: Player;
   private transitioning = false;
   private restartKey!: Phaser.Input.Keyboard.Key;
+  private dragon!: Enemy;
 
   constructor() {
     super('Level1Scene');
   }
 
-  create() {
+  create(data: LevelState = {}) {
     this.transitioning = false;
+    this.cameras.main.fadeIn(280, 0, 0, 0);
     const clouds = [
       { x: 120, y: 150, scale: 0.14 },
       { x: 380, y: 235, scale: 0.18 },
@@ -64,11 +67,13 @@ export class Level1Scene extends Phaser.Scene {
     // Основание указателя стоит на земле; декорация не мешает движению.
     this.add.image(210, 630, 'sign').setOrigin(0.5, 1).setScale(0.1);
 
-    this.player = new Player(this, 100, 580);
+    this.player = new Player(this, data.spawnX ?? 100, 580);
+    restorePlayer(this.player, data);
     this.physics.add.collider(this.player, platforms);
-    const dragon = new Enemy(this, 1080, 628);
+    const dragon = this.dragon = new Enemy(this, 1080, 628);
     this.physics.add.collider(dragon, platforms);
     const mushrooms = [
+      new Collectible(this, 400, 580),
       new Collectible(this, 974, 292),
     ];
 
@@ -79,7 +84,7 @@ export class Level1Scene extends Phaser.Scene {
     this.physics.add.overlap(this.player, dungeonTrigger, () => {
       if (this.transitioning || !this.player.isLive()) return;
       this.transitioning = true;
-      this.scene.start('DungeonScene', { health: this.player.health });
+      fadeTo(this, 'DungeonScene', playerState(this.player));
     });
 
     addHealthBar(this, this.player, PLAYER_MAX_HEALTH, 'Рыцарь', 24, 20);
@@ -93,6 +98,11 @@ export class Level1Scene extends Phaser.Scene {
     }
 
     connectDragonCombat(this.player, dragon);
+    addDefeatPrompt(this, this.player);
+    this.add.text(24, 100, '← → движение   ↑ прыжок / ещё раз в воздухе   Space удар   Shift рывок   R заново', {
+      fontFamily: 'Arial', fontSize: '17px', color: '#172331', backgroundColor: '#ffffffbb', padding: { x: 8, y: 5 },
+    });
+    this.add.text(714, 642, '↓ Подземелье', { fontFamily: 'Arial', fontSize: '18px', color: '#172331', backgroundColor: '#ffffffbb', padding: { x: 8, y: 4 } }).setOrigin(0.5);
     this.restartKey = this.input.keyboard!.addKey('R');
   }
 
@@ -103,5 +113,6 @@ export class Level1Scene extends Phaser.Scene {
     }
 
     this.player.update();
+    this.dragon.update(this.player);
   }
 }
