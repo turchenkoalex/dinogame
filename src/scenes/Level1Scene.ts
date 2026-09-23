@@ -62,15 +62,13 @@ export class Level1Scene extends Phaser.Scene {
     }
 
     // Основание указателя стоит на земле; декорация не мешает движению.
-    this.add.image(210, 628, 'sign').setOrigin(0.5, 1).setScale(0.1);
+    this.add.image(210, 630, 'sign').setOrigin(0.5, 1).setScale(0.1);
 
     this.player = new Player(this, 100, 580);
     this.physics.add.collider(this.player, platforms);
     const dragon = new Enemy(this, 1080, 628);
     this.physics.add.collider(dragon, platforms);
     const mushrooms = [
-      new Collectible(this, 620, 480),
-      new Collectible(this, 790, 376),
       new Collectible(this, 974, 292),
     ];
 
