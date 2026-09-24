@@ -6,6 +6,7 @@ export interface LevelState {
   health?: number;
   armorRemaining?: number;
   spawnX?: number;
+  surfaceDragonDefeated?: boolean;
 }
 
 export function playerState(player: Player): LevelState {

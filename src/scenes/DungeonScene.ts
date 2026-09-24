@@ -48,7 +48,7 @@ export class DungeonScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, returnPortal, () => {
       if (this.transitioning || !this.player.isLive()) return;
       this.transitioning = true;
-      fadeTo(this, 'Level1Scene', { ...playerState(this.player), spawnX: 550 });
+      fadeTo(this, 'Level1Scene', { ...playerState(this.player), spawnX: 550, surfaceDragonDefeated: data.surfaceDragonDefeated });
     });
     dragon.once('defeated', () => {
       const exitPortal = addPortal(this, 1200, 606, 'Небесные острова →', 0xffd875);

@@ -19,6 +19,7 @@ export class BootScene extends Phaser.Scene {
     this.load.image('cloud', `${import.meta.env.BASE_URL}assets/images/cloud.png`);
     this.load.image('fire', `${import.meta.env.BASE_URL}assets/images/fire.png`);
     this.load.image('ground_middle', `${import.meta.env.BASE_URL}assets/images/ground_middle.png`);
+    this.load.image('dungeon_gate', `${import.meta.env.BASE_URL}assets/images/dungeon_gate.png`);
   }
 
   create() {

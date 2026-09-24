@@ -39,9 +39,16 @@ export class Level1Scene extends Phaser.Scene {
     const platforms = this.physics.add.staticGroup();
     const hole = { x: 704, width: 128 };
 
-    // Два независимых участка, между ними — настоящий вход в подземелье.
+    // Проход между участками сперва закрыт люком: по нему можно дойти до дракона.
     addGround(this, platforms, 0, 620, hole.x);
     addGround(this, platforms, hole.x + hole.width, 620, GAME_WIDTH - hole.x - hole.width);
+    const hatch = this.add.image(hole.x, 612, 'dungeon_gate')
+      .setOrigin(0).setDisplaySize(hole.width, 108).setDepth(-0.1);
+    const hatchSurface = this.add.zone(hole.x, 620 + 8, hole.width, 100).setOrigin(0);
+    platforms.add(hatchSurface);
+    const hatchLabel = this.add.text(hole.x + hole.width / 2, 578, 'Вход закрыт', {
+      fontFamily: 'Arial', fontSize: '18px', color: '#172331', backgroundColor: '#ffffffcc', padding: { x: 8, y: 4 },
+    }).setOrigin(0.5);
 
     // x/y — левый верхний угол изображения; одинаковый масштаб по обеим осям.
     // Три ступени по рисунку: короткая у дыры, средняя и верхняя справа.
@@ -84,7 +91,7 @@ export class Level1Scene extends Phaser.Scene {
     this.physics.add.overlap(this.player, dungeonTrigger, () => {
       if (this.transitioning || !this.player.isLive()) return;
       this.transitioning = true;
-      fadeTo(this, 'DungeonScene', playerState(this.player));
+      fadeTo(this, 'DungeonScene', { ...playerState(this.player), surfaceDragonDefeated: true });
     });
 
     addHealthBar(this, this.player, PLAYER_MAX_HEALTH, 'Рыцарь', 24, 20);
@@ -98,11 +105,16 @@ export class Level1Scene extends Phaser.Scene {
     }
 
     connectDragonCombat(this.player, dragon);
+    dragon.once('defeated', () => {
+      hatchSurface.destroy();
+      hatchLabel.setText('↓ Подземелье').setY(642);
+      this.tweens.add({ targets: hatch, alpha: 0, y: 636, duration: 360, onComplete: () => hatch.destroy() });
+    });
+    if (data.surfaceDragonDefeated) dragon.takeDamage(DRAGON_MAX_HEALTH);
     addDefeatPrompt(this, this.player);
     this.add.text(24, 100, '← → движение   ↑ прыжок / ещё раз в воздухе   Space удар   Shift рывок   R заново', {
       fontFamily: 'Arial', fontSize: '17px', color: '#172331', backgroundColor: '#ffffffbb', padding: { x: 8, y: 5 },
     });
-    this.add.text(714, 642, '↓ Подземелье', { fontFamily: 'Arial', fontSize: '18px', color: '#172331', backgroundColor: '#ffffffbb', padding: { x: 8, y: 4 } }).setOrigin(0.5);
     this.restartKey = this.input.keyboard!.addKey('R');
   }
 
