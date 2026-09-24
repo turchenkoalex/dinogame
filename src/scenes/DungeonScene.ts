@@ -72,10 +72,10 @@ export class DungeonScene extends Phaser.Scene {
       const texture = this.textures.createCanvas(glowKey, 512, 512)!;
       const context = texture.getContext();
       const gradient = context.createRadialGradient(256, 256, 0, 256, 256, 256);
-      gradient.addColorStop(0, 'rgba(255, 180, 70, 0.32)');
-      gradient.addColorStop(0.25, 'rgba(255, 140, 45, 0.18)');
-      gradient.addColorStop(0.6, 'rgba(235, 100, 25, 0.06)');
-      gradient.addColorStop(1, 'rgba(235, 100, 25, 0)');
+      gradient.addColorStop(0, 'rgba(255, 200, 115, 0.18)');
+      gradient.addColorStop(0.3, 'rgba(255, 165, 75, 0.08)');
+      gradient.addColorStop(0.65, 'rgba(255, 145, 65, 0.01)');
+      gradient.addColorStop(1, 'rgba(255, 145, 65, 0)');
       context.fillStyle = gradient;
       context.fillRect(0, 0, 512, 512);
       texture.refresh();
@@ -88,14 +88,15 @@ export class DungeonScene extends Phaser.Scene {
       { x: 1090, y: 370 },
     ];
     positions.forEach(({ x, y }, index) => {
-      const glow = this.add.image(x, y, glowKey).setDepth(-2);
+      const glow = this.add.image(x, y, glowKey)
+        .setScale(0.62).setBlendMode(Phaser.BlendModes.ADD).setDepth(-2);
       this.add.image(x, y, 'fire').setOrigin(0.6, 0.3).setScale(0.12).setDepth(-1);
       // Независимое мерцание света; сам настенный факел остаётся неподвижным.
       this.tweens.add({
         targets: glow,
-        alpha: 0.72,
-        scaleX: 0.94,
-        scaleY: 0.96,
+        alpha: 0.85,
+        scaleX: 0.6,
+        scaleY: 0.61,
         duration: 380 + index * 97,
         ease: 'Sine.easeInOut',
         yoyo: true,
