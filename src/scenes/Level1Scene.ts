@@ -83,7 +83,6 @@ export class Level1Scene extends Phaser.Scene {
     ]);
     this.physics.add.collider(dragon, platforms);
     const mushrooms = [
-      new Collectible(this, 400, 580),
       new Collectible(this, 974, 292),
     ];
 
