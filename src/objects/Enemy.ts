@@ -31,7 +31,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.body.setSize(147, 150);
     this.body.setCollideWorldBounds(true);
     this.play('dragon-idle');
-    this.flightSprite = scene.add.sprite(x, y + 35 * sizeMultiplier, 'dragon-flight-up')
+    // Flight artwork uses the standing frame's dimensions and foot-level origin.
+    this.flightSprite = scene.add.sprite(x, y, 'dragon-flight-up')
       .setOrigin(0.5, 1).setScale(DRAGON_SCALE * sizeMultiplier).setVisible(false);
     this.flightSprite.setDepth(this.depth + 1);
     this.nextFlightAt = scene.time.now + 3800;
@@ -108,7 +109,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     const wingFrame = Math.floor(this.scene.time.now / 150) % 2 === 0
       ? 'dragon-flight-up' : 'dragon-flight-down';
     if (this.flightSprite.texture.key !== wingFrame) this.flightSprite.setTexture(wingFrame);
-    this.flightSprite.setPosition(this.x, this.y + 35 * (this.scaleX / DRAGON_SCALE));
+    this.flightSprite.setPosition(this.x, this.y);
   }
 
   attack() {
