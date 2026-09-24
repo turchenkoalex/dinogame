@@ -77,7 +77,10 @@ export class Level1Scene extends Phaser.Scene {
     this.player = new Player(this, data.spawnX ?? 100, 580);
     restorePlayer(this.player, data);
     this.physics.add.collider(this.player, platforms);
-    const dragon = this.dragon = new Enemy(this, 1080, 628);
+    const dragon = this.dragon = new Enemy(this, 1080, 628, 1, [
+      { x: 1080, y: 628 },
+      { x: 974, y: 328 },
+    ]);
     this.physics.add.collider(dragon, platforms);
     const mushrooms = [
       new Collectible(this, 400, 580),
